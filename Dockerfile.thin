@@ -1,0 +1,23 @@
+FROM python:2.7 AS python-deps
+
+WORKDIR /backend
+
+COPY flask-app/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+
+FROM python:2.7-slim
+
+WORKDIR /app
+
+# Copy Python dependencies
+COPY --from=python-deps /usr/local/lib/python2.7/site-packages/ /usr/local/lib/python2.7/site-packages/
+
+# Copy backend code
+COPY flask-app/app.py .
+
+# Expose Flask's default port
+EXPOSE 5000
+
+# Command to run Flask
+CMD ["python", "app.py"]

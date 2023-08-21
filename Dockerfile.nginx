@@ -1,0 +1,14 @@
+FROM node:14 AS frontend-build
+
+WORKDIR /frontend
+
+# Install frontend dependencies and build the React project
+COPY flask-app/package*.json .
+RUN npm install
+COPY flask-app/ ./
+RUN npm run build
+
+FROM nginx
+
+COPY flask-app/templates  /usr/share/nginx/html
+COPY --from=frontend-build /frontend/static /usr/share/nginx/html/static
